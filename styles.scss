@@ -1,5 +1,14 @@
 @charset "utf-8";
 
-@import 'darkly/_variables';
+// darkly, etc.
+@import 'superhero/_variables';
 @import 'bulma';
-@import 'darkly/_overrides';
+@import 'superhero/_overrides';
+
+dt.title:not(.is-spaced) + dd.subtitle {
+  margin-top: -0.5rem;
+}
+
+dt.title:not(:last-child), dd.subtitle:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
