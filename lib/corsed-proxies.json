@@ -1,4 +1,4 @@
 [
-  "http://localhost:8080/",
-  "https://cors-anywhere.herokuapp.com/"
+  ["https://allow-any-origin.appspot.com/", true],
+  ["https://cors-anywhere.herokuapp.com/"]
 ]
