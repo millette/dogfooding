@@ -1,11 +1,13 @@
-/* global URL, URLSearchParams */
+/* global URLSearchParams */
 
 import { Component } from 'react'
 import AuthorPackages from './author-packages'
+// import corsedImp from '../lib/corsed'
+import corsed from '../lib/corsed'
+
+// const corsed = corsedImp.bind(null, URL)
 
 let cnt = 0
-
-const corsed = (proxy) => new URL('/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors', proxy)
 
 const mapper = (x) => ({
   doc: x.doc,
@@ -22,31 +24,48 @@ const sorter = (a, b) => {
   return 0
 }
 
+const ErrorSection = (props) => props.error ? <section className='section'>
+  <div className='container'>
+    <article className='message is-danger'>
+      <div className='message-header'>
+        <p>Error</p>
+        <button className='delete' aria-label='delete' />
+      </div>
+      <div className='message-body'>
+        {props.error.toString()}
+      </div>
+    </article>
+  </div>
+</section> : null
+
 class NameForm extends Component {
   constructor (props) {
     super(props)
     this.state = { packages: false, author: '' }
     this.nameid = `nameform-nameid-${++cnt}`
     this.handleSubmit = this.handleSubmit.bind(this)
+    // console.log('URL:', typeof URL)
+    // this.corsed = corsedImp.bind(null, URL)
+    this.u = corsed()
   }
 
   handleSubmit (event) {
     event.preventDefault()
     console.log('A name was submitted: ' + this.input.value)
-    if (!this.input.value) { return this.setState({ packages: false }) }
+    if (!this.input.value) { return this.setState({ error: false, packages: false }) }
     // const u = new URL('http://localhost:8080/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors')
-    const u = corsed('http://localhost:8080/')
+    // const u = corsed()
     // const u = new URL('https://cors-anywhere.herokuapp.com/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors')
     // https://cors-anywhere.herokuapp.com/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors
     // https://skimdb.npmjs.com/registry/_design/app/_view/browseAuthors
-    u.search = new URLSearchParams({
+    this.u.search = new URLSearchParams({
       reduce: false,
       // include_docs: true,
       startkey: JSON.stringify([this.input.value]),
       endkey: JSON.stringify([this.input.value, '\ufff0'])
     })
 
-    window.fetch(u, { mode: 'cors' })
+    window.fetch(this.u, { mode: 'cors' })
       .then((res) => res.ok && res.json())
       .then((json) => {
         const packages = json && json.rows && json.rows.length && json.rows
@@ -54,25 +73,26 @@ class NameForm extends Component {
           .sort(sorter)
 
         this.setState({
+          error: false,
           processing: Boolean(packages),
           author: this.input.value,
           packages
         })
-        return packages.map((x) => x.id)
+        return packages && packages.map((x) => x.id)
       })
       .then((packageIDs) => {
-        if (!this.state.packages) { return false }
-        u.search = new URLSearchParams({
+        if (!this.state.packages) { return [false, []] }
+        this.u.search = new URLSearchParams({
           reduce: false,
           include_docs: true,
           startkey: JSON.stringify([this.state.author]),
           endkey: JSON.stringify([this.state.author, '\ufff0'])
         })
-        return Promise.all([window.fetch(u, { mode: 'cors' }), packageIDs])
+        return Promise.all([window.fetch(this.u, { mode: 'cors' }), packageIDs])
       })
       .then(([res, packageIDs]) => Promise.all([res && res.ok && res.json(), packageIDs]))
       .then(([json, packageIDs]) => {
-        const packages = json.rows
+        const packages = json && json.rows
           .map((row) => {
             if (!row.doc || !row.doc['dist-tags'] || !row.doc['dist-tags'].latest) { return false }
             const latest = row.doc.versions[row.doc['dist-tags'].latest]
@@ -95,11 +115,16 @@ class NameForm extends Component {
           .sort(sorter)
 
         this.setState({
+          error: !packages && new Error('No packages found.'),
           processing: false,
           packages
         })
       })
-      .catch(console.error)
+      .catch((error) => {
+        console.error('El Error:', error)
+        this.setState({ error })
+        this.u = corsed()
+      })
   }
 
   render () {
@@ -118,11 +143,17 @@ class NameForm extends Component {
                   </div>
                   <p className='help'>Enter your <code>npm username</code></p>
                 </div>
+                <div className='field'>
+                  <div className='control'>
+                    <button className='button' type='submit'>Submit</button>
+                  </div>
+                </div>
               </div>
             </div>
           </form>
         </div>
       </section>
+      <ErrorSection error={this.state.error} />
       <section className='section'>
         <div className='container'>
           <AuthorPackages processing={this.state.processing} author={this.state.author} packages={this.state.packages} />
