@@ -5,6 +5,8 @@ import AuthorPackages from './author-packages'
 
 let cnt = 0
 
+const corsed = (proxy) => new URL('/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors', proxy)
+
 const mapper = (x) => ({
   doc: x.doc,
   id: x.id,
@@ -23,35 +25,23 @@ const sorter = (a, b) => {
 class NameForm extends Component {
   constructor (props) {
     super(props)
-    // this.state = { value: '', packages: false, author: '' }
     this.state = { packages: false, author: '' }
     this.nameid = `nameform-nameid-${++cnt}`
-    // this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  /*
-  handleChange (event) {
-    const value = event.target.value.trim()
-    this.setState({ value })
-  }
-  */
-
   handleSubmit (event) {
     event.preventDefault()
-    // console.log('A name was submitted: ' + this.state.value)
-    // if (!this.state.value) { return this.setState({ packages: false }) }
     console.log('A name was submitted: ' + this.input.value)
     if (!this.input.value) { return this.setState({ packages: false }) }
-    const u = new URL('http://localhost:8080/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors')
+    // const u = new URL('http://localhost:8080/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors')
+    const u = corsed('http://localhost:8080/')
     // const u = new URL('https://cors-anywhere.herokuapp.com/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors')
     // https://cors-anywhere.herokuapp.com/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors
     // https://skimdb.npmjs.com/registry/_design/app/_view/browseAuthors
     u.search = new URLSearchParams({
       reduce: false,
       // include_docs: true,
-      // startkey: JSON.stringify([this.state.value]),
-      // endkey: JSON.stringify([this.state.value, '\ufff0'])
       startkey: JSON.stringify([this.input.value]),
       endkey: JSON.stringify([this.input.value, '\ufff0'])
     })
@@ -65,7 +55,6 @@ class NameForm extends Component {
 
         this.setState({
           processing: Boolean(packages),
-          // author: this.state.value,
           author: this.input.value,
           packages
         })

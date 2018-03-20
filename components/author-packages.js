@@ -1,6 +1,5 @@
 export default (props) => {
   if (!props.packages || !props.packages.length) { return <p>Nothing here.</p> }
-  // let nTotalDeps = 0
   let nOwnDeps = 0
   let nOthersDeps = 0
 
@@ -10,7 +9,6 @@ export default (props) => {
     const keywords = doc && doc.keywords && doc.keywords
       .filter(onlyUnique)
       .map((y) => <span key={y} className='tag is-primary is-rounded'>{y}</span>)
-      // .map((y) => <span key={`kw-${id}-${y}`} className='tag is-primary is-rounded'>{y}</span>)
     const keywords2 = keywords ? <dd className='tags'>{keywords}</dd> : ''
 
     const othersDependencies = []
@@ -22,7 +20,6 @@ export default (props) => {
       }
       othersDependencies2 = othersDependencies
         .map((y) => <span key={y} className='tag is-info'>{y}</span>)
-        // .map((y) => <span key={`otherdep-${id}-${y}`} className='tag is-info'>{y}</span>)
     }
     nOthersDeps += othersDependencies.length
     othersDependencies2 = othersDependencies2 ? <dd className='tags'>{othersDependencies2}</dd> : ''
@@ -35,7 +32,6 @@ export default (props) => {
       }
       ownDependencies2 = ownDependencies
         .map((y) => <span key={y} className='tag is-danger'>{y}</span>)
-        // .map((y) => <span key={`owndep-${id}-${y}`} className='tag is-danger'>{y}</span>)
     }
     nOwnDeps += ownDependencies.length
     ownDependencies2 = ownDependencies2 ? <dd className='tags'>{ownDependencies2}</dd> : ''
