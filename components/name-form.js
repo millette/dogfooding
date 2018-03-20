@@ -2,10 +2,7 @@
 
 import { Component } from 'react'
 import AuthorPackages from './author-packages'
-// import corsedImp from '../lib/corsed'
 import corsed from '../lib/corsed'
-
-// const corsed = corsedImp.bind(null, URL)
 
 let cnt = 0
 
@@ -44,14 +41,11 @@ class NameForm extends Component {
     this.state = { packages: false, author: '' }
     this.nameid = `nameform-nameid-${++cnt}`
     this.handleSubmit = this.handleSubmit.bind(this)
-    // console.log('URL:', typeof URL)
-    // this.corsed = corsedImp.bind(null, URL)
     this.u = corsed()
   }
 
   handleSubmit (event) {
     event.preventDefault()
-    console.log('A name was submitted: ' + this.input.value)
     if (!this.input.value) { return this.setState({ error: false, packages: false }) }
     // const u = new URL('http://localhost:8080/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors')
     // const u = corsed()
@@ -60,7 +54,6 @@ class NameForm extends Component {
     // https://skimdb.npmjs.com/registry/_design/app/_view/browseAuthors
     this.u.search = new URLSearchParams({
       reduce: false,
-      // include_docs: true,
       startkey: JSON.stringify([this.input.value]),
       endkey: JSON.stringify([this.input.value, '\ufff0'])
     })
@@ -121,7 +114,6 @@ class NameForm extends Component {
         })
       })
       .catch((error) => {
-        console.error('El Error:', error)
         this.setState({ error })
         this.u = corsed()
       })
