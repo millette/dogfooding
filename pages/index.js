@@ -1,5 +1,5 @@
 import '../styles.scss'
-import NameForm from '../lib/name-form'
+import NameForm from '../components/name-form'
 
 export default () => <div>
   <section className='hero is-primary'>
