@@ -1,5 +1,9 @@
 export default (props) => {
-  if (!props.packages || !props.packages.length) { return <p>Nothing here.</p> }
+  if (!props.packages || !props.packages.length) {
+    return <div className='message'>
+      <p className='message-body'>Nothing here.</p>
+    </div>
+  }
   let nOwnDeps = 0
   let nOthersDeps = 0
 
@@ -48,13 +52,23 @@ export default (props) => {
 
   const nTotalDeps = nOthersDeps + nOwnDeps
 
-  const loading = props.processing ? <p><img style={{marginRight: '1em'}} src='/static/imgs/loading.gif' />Processing...</p> : ''
+  let loading = null
+  if (props.processing) {
+    loading = <div className='message is-warning'>
+      <p className='message-body'>
+        <img style={{marginRight: '1em'}} src='/static/imgs/loading.gif' />
+        Processing...
+      </p>
+    </div>
+  }
 
-  let stats
-  if (props.processing || !nTotalDeps || !nOwnDeps) {
-    stats = ''
-  } else {
-    stats = <p><strong>{Math.round(100 * nOwnDeps / nTotalDeps)} % of dependencies are by the author.</strong></p>
+  let stats = null
+  if (!props.processing && nTotalDeps && nOwnDeps) {
+    stats = <div className='message is-info'>
+      <p className='message-body'>
+        {Math.round(100 * nOwnDeps / nTotalDeps)} % of dependencies are by the author.
+      </p>
+    </div>
   }
 
   return <div>

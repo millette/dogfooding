@@ -21,19 +21,26 @@ const sorter = (a, b) => {
   return 0
 }
 
-const ErrorSection = (props) => props.error ? <section className='section'>
-  <div className='container'>
-    <article className='message is-danger'>
-      <div className='message-header'>
-        <p>Error</p>
-        <button className='delete' aria-label='delete' />
+const ErrorSection = ({ error, form }) => {
+  let ret = null
+  if (error) {
+    ret = <section className='section'>
+      <div className='container'>
+        <article className='message is-danger'>
+          <div className='message-header'>
+            <p>Error</p>
+            <button className='delete' aria-label='delete' />
+          </div>
+          <div className='message-body'>
+            <p>{error.toString()}</p>
+            <button className='button is-primary' onClick={form.handleSubmit.bind(form)}>Try again?</button>
+          </div>
+        </article>
       </div>
-      <div className='message-body'>
-        {props.error.toString()}
-      </div>
-    </article>
-  </div>
-</section> : null
+    </section>
+  }
+  return ret
+}
 
 class NameForm extends Component {
   constructor (props) {
@@ -45,13 +52,8 @@ class NameForm extends Component {
   }
 
   handleSubmit (event) {
-    event.preventDefault()
+    if (event) { event.preventDefault() }
     if (!this.input.value) { return this.setState({ error: false, packages: false }) }
-    // const u = new URL('http://localhost:8080/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors')
-    // const u = corsed()
-    // const u = new URL('https://cors-anywhere.herokuapp.com/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors')
-    // https://cors-anywhere.herokuapp.com/skimdb.npmjs.com:443/registry/_design/app/_view/browseAuthors
-    // https://skimdb.npmjs.com/registry/_design/app/_view/browseAuthors
     this.u.search = new URLSearchParams({
       reduce: false,
       startkey: JSON.stringify([this.input.value]),
@@ -145,7 +147,7 @@ class NameForm extends Component {
           </form>
         </div>
       </section>
-      <ErrorSection error={this.state.error} />
+      <ErrorSection form={this} error={this.state.error} />
       <section className='section'>
         <div className='container'>
           <AuthorPackages processing={this.state.processing} author={this.state.author} packages={this.state.packages} />
