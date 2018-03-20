@@ -31,12 +31,12 @@ export default (props) => {
         ownDependencies.push(r)
       }
       ownDependencies2 = ownDependencies
-        .map((y) => <span key={y} className='tag is-danger'>{y}</span>)
+        .map((y) => <a href={`#${y}`} key={y} className='tag is-danger'>{y}</a>)
     }
     nOwnDeps += ownDependencies.length
     ownDependencies2 = ownDependencies2 ? <dd className='tags'>{ownDependencies2}</dd> : ''
 
-    return <dl className='box' key={id}>
+    return <dl id={id} className='box' key={id}>
       <dt className='title is-4'>{id}</dt>
       <dd className='subtitle is-6'>{new Date(date).toString()}</dd>
       <dd>{description}</dd>
@@ -59,7 +59,7 @@ export default (props) => {
 
   return <div>
     <h2 className='title'>Author {props.author}</h2>
-    <h3 className='subtitle'>{props.packages.length} modules</h3>
+    <h3 className='subtitle'>{props.packages.length} packages</h3>
     {loading}
     {stats}
     {x}
