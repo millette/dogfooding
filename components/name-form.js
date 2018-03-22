@@ -109,6 +109,7 @@ class NameForm extends Component {
           .map(mapper)
           .sort(sorter)
 
+        if (!packages) { this.u = corsed() }
         this.setState({
           error: !packages && new Error('No packages found.'),
           processing: false,
