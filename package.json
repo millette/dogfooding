@@ -10,7 +10,7 @@
     "build": "standard && next build",
     "export": "next export",
     "start": "next start",
-    "now": "mkdir out/_next/static ; cp .next/static/style.css out/_next/static/ && now out --public --static --name=dogfooding",
+    "now": "mkdir out/_next/static ; cp favicon.ico out/ && cp .next/static/style.css out/_next/static/ && now out --public --static --name=dogfooding",
     "lint": "standard"
   },
   "dependencies": {
