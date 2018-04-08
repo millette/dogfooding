@@ -45,10 +45,15 @@ const ErrorSection = ({ error, form }) => {
 class NameForm extends Component {
   constructor (props) {
     super(props)
-    this.state = { packages: false, author: '' }
+
+    this.state = { packages: false, author: props.author }
     this.nameid = `nameform-nameid-${++cnt}`
     this.handleSubmit = this.handleSubmit.bind(this)
     this.u = corsed()
+    if (props.author) {
+      this.input = { value: props.author }
+      this.handleSubmit()
+    }
   }
 
   handleSubmit (event) {
@@ -134,7 +139,7 @@ class NameForm extends Component {
               <div className='field-body'>
                 <div className='field'>
                   <div className='control'>
-                    <input id={this.nameid} type='text' ref={(input) => { this.input = input }} />
+                    <input id={this.nameid} type='text' ref={(input) => { this.input = input }} defaultValue={this.props.author} />
                   </div>
                   <p className='help'>Enter your <code>npm username</code></p>
                 </div>
